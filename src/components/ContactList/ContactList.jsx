@@ -1,35 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
-import { selectContacts, selectFilter } from 'redux/selectors';
+import { selectContacts, selectVisibleContacts } from 'redux/selectors';
+import { deleteContact, fetchContacts } from 'redux/operations';
 
 import { List, ListItem, Button } from './ContactList.styled';
-import { deleteContact, fetchContacts } from 'redux/operations';
-import { useEffect } from 'react';
 
 const ContactList = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
-  const filter = useSelector(selectFilter);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  const filteredName = () => {
-    const filterLower = filter.toLowerCase();
-    if (contacts) {
-      const filteredName = contacts.filter(({ name }) => {
-        return name.toLowerCase().trim().includes(filterLower);
-      });
-      return filteredName;
-    }
-  };
+  const filteredName = useSelector(selectVisibleContacts);
 
   return (
     <>
       <List>
         {contacts &&
-          filteredName().map(({ name, id, phone }) => {
+          filteredName.map(({ name, id, phone }) => {
             return (
               <ListItem key={id}>
                 {name}: {phone}{' '}
